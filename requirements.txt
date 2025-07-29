@@ -3,3 +3,4 @@ install
 pandas 
 pandasql
 tabulate 
+openpyxl

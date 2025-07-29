@@ -99,11 +99,22 @@ def ORDERBY(columns: list):
                 columns.pop(index - 1)
                 n = 0
                 os.system('clear')
-                
-                
-                
-            
-                  
+
+def LIMIT(): 
+    limit = int(input("Please enter how much you data points you would like to see: "))
+    os.system("clear")
+    choice = int(input("Would you like to add an offset 1.Yes or 2.No"))
+    if choice == 1:
+        os.system("clear")
+        offset = int(input("please enter the offset: "))
+        os.system("clear")
+        return f"{limit} OFFSET {offset}" 
+    else:
+        os.system("clear")
+        return f"{limit}"
+
+## MAIN DRIVER
+           
 pysqldf = lambda q: sqldf(q, locals())              
 extension = ".xlsx"
 query = ""

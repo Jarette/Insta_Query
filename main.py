@@ -123,15 +123,24 @@ os.system('cls')
 file_w_extension = file_name + extension
 df = pd.read_excel(file_w_extension)
 column_names= df.columns.to_list()
-limit = LIMIT()
-print(limit)
-#Select = SELECT(column_names)
-#Select_statement = f"SELECT{Select}"
-#os.system('cls')
-#query = Select_statement+"FROM df"
+Select = SELECT(column_names)
+Select_statement = f"SELECT{Select}"
+os.system('cls')
+query = Select_statement+"FROM df"
+print("Would you like to add a WHERE clause?")
+where_choice = int(input("1. Yes or 2. No: "))
+if where_choice == 1:
+    os.system('cls')
+    where = WHERE(column_names)
+    query = query + " WHERE " + where
+    print(query)
+else:
+    os.system('cls')
+    print(query)
 #print(query)
 #result = sqldf(query)
 #print(tabulate(result, headers = 'keys', tablefmt = 'psql'))
+
 
 # query = "SELECT id FROM df"
 # result = sqldf(query)

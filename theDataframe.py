@@ -57,7 +57,9 @@ def get_columns(df:pd.DataFrame) -> tuple[list:str,list:str]:
     # returning the list of of original names and formated names respectively
     return original_column_names,formated_column_names
 
-
+def updating_columns(df:pd.DataFrame) -> pd.DataFrame:
+    
+    return 0
 df = read_dataframe(test_path)
 og_cnames,new_cnames = get_columns(df)
 print(new_cnames)

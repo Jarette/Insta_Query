@@ -6,6 +6,7 @@ tabulate
 openpyxl
 tkinter
 os
+re
 
 Notes for full thing 
 

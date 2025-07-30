@@ -29,12 +29,32 @@ def read_dataframe(test_path: str) -> pd.DataFrame:
     return df
 
 
+"""
+Name: get_columns
+Description: Reads in a data frame and gets the name of the columns from the data frame
+keeping the original names of the column and the new formated names removing spaces and all 
+alphamuneric characters. Then return the both the list of string of original names and formated names 
+"""
 def get_columns(df:pd.DataFrame) -> tuple[list:str,list:str]:
+
+    # getting the original names of the colunmns and saving them as a string 
     original_column_names= df.columns.to_list()
+
+    # initializing list to store formated names 
     formated_column_names = []
+
+    # going through each column name 
     for column in original_column_names:
+        # making all names lower case
         new_name = column.lower()
-        formated_column_names.append(new_name)
+
+        # removing all special characters and space
+        new_name2 = re.sub(r"[^a-zA-Z0-9]",'',new_name)
+
+        # saving this new name to a different list
+        formated_column_names.append(new_name2)
+
+    # returning the list of of original names and formated names respectively
     return original_column_names,formated_column_names
 
 

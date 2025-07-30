@@ -4,3 +4,10 @@ pandas
 pandasql
 tabulate 
 openpyxl
+tkinter
+os
+
+Notes for full thing 
+
+# Take spaces out of coulumn name 
+# and Special charcters

@@ -3,7 +3,9 @@ from getFile import get_file_extension
 from tabulate import tabulate
 import re
 
-test_path = "C:/Users/jgreene/Desktop/Insta_Query/Insta_Query/Test.xlsx"
+test_path = "C:/Users/Jaded/Documents/insta_queary/Insta_Query/Test.xlsx"
+
+# path for at work "C:/Users/jgreene/Desktop/Insta_Query/Insta_Query/Test.xlsx"
 
 """
 Name: read_dataframe
@@ -57,12 +59,34 @@ def get_columns(df:pd.DataFrame) -> tuple[list:str,list:str]:
     # returning the list of of original names and formated names respectively
     return original_column_names,formated_column_names
 
+"""
+Name: updating_columns
+Description: updating the names of the columns in the data frame using the new list of formated column names
+"""
 def updating_columns(df:pd.DataFrame,orginal_names:list,new_names:list):
-    for names in orginal_names:
-        df.rename(columns={})
     
-    return 0
-df = read_dataframe(test_path)
-og_cnames,new_cnames = get_columns(df)
-print(new_cnames)
+    # going through each column and renaming accorindingly 
+    for original_name,new_name in zip(orginal_names,new_names):
+        df.rename(columns={original_name:new_name}, inplace=True)
+
+"""
+Name: column_data_type
+Description: gets the data type of the column passed in. List of data types below 
+
+int64/32/16/8
+uint64/32/16/8
+float64/32/16
+bool
+object(this includes strings)
+datetime64
+Timedelta
+"""
+def column_data_type(df:pd.DataFrame,column:str):
+    return df[column].dtype
+
+#df = read_dataframe(test_path)
+#og_cnames,new_cnames = get_columns(df)
+#updating_columns(df,og_cnames,new_cnames)
+#for column in new_cnames:
+ #   print(f"{column}: {column_data_type(df,column)}")
     

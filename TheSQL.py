@@ -82,9 +82,10 @@ def SELECT_statemet(selected_columns:list):
             selected_columns.remove(columns)
     return select_statement
 
-  def get_selected_choice():
-    print("Selected:", selected_choice.get())
-    
+def get_selected_choice(choices:list[tk.StringVar],final_choices:list):
+    for choice in choices:
+        final_choices.append(choice.get())
+
 def ascending_or_descending(selected_columns:list):
     window = tk.Tk()
     window.title("ASC or DESC")
@@ -93,8 +94,6 @@ def ascending_or_descending(selected_columns:list):
     menus = []
     labels = []
     ASC_or_DESC = []
-    for c in selected_columns:
-        ASC_or_DESC.append("ASC")
     
     for i,columns in enumerate(selected_columns):
         label = tk.Label(window, text = columns)
@@ -109,17 +108,36 @@ def ascending_or_descending(selected_columns:list):
         option_menu.grid(row=i, column=2, padx=10, pady=5)
         menus.append(option_menu)
 
+    finalize_button = tk.Button(window, text="Finalize choices", command= lambda : get_selected_choice(choices, ASC_or_DESC))
+    finalize_button.grid(row=len(selected_columns), column=0, pady=10)
+
+    close_button = ttk.Button(window, text="Next", command=window.destroy)
+    close_button.grid(row=len(selected_columns)+1, column=0, pady=10)
+
     window.update_idletasks()
     current_height = window.winfo_height()
     window.geometry(f"500x{current_height}")
     window.mainloop()
+    return ASC_or_DESC
+
+def ORDER_BY_statement(selected_columns:list, ascending_or_descending:list):
+    order_by_statement = "ORDER BY "
+    combine 
+    for colunms in selected_columns:
+        print(colunms)
+    return order_by_statement
+
    
 
 
 
 selected_columns = []
+finalize_selections = []
 df = read_dataframe(test_path)
 column_names = df.columns.to_list()
 column_selection(column_names,column_names,selected_columns)
-ascending_or_descending(selected_columns)
+finalize_selections = ascending_or_descending(selected_columns)
+print(selected_columns)
+print(finalize_selections)
+print(ORDER_BY_statement(selected_columns,finalize_selections))
 

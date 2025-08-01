@@ -3,7 +3,10 @@ import pandasql as pdsql
 from theDataframe import read_dataframe
 import tkinter as tk
 from tkinter import ttk
-test_path = "C:/Users/Jaded/Documents/insta_queary/Insta_Query/Test.xlsx"
+
+test_path = "C:/Users/jgreene/Desktop/Insta_Query/Insta_Query/Test.xlsx"
+
+#"C:/Users/Jaded/Documents/insta_queary/Insta_Query/Test.xlsx"
 
 # path for at work "C:/Users/jgreene/Desktop/Insta_Query/Insta_Query/Test.xlsx"
 
@@ -56,16 +59,34 @@ def column_selection(original_column_names:list,formated_column_names,selected_c
     
     
     window.mainloop()
-        
+
+"""
+Name: column_selection
+Description: takes the list of selected columns and generate a SQL SELECT statement using those column
+in correct syntax
+"""
+
 def SELECT_statemet(selected_columns:list):
-    return 0
+    # base SELECT statement 
+    select_statement = "SELECT "
+
+    # if there is only one element remaining add it to statement but no comma 
+    for columns in selected_columns:
+        if len(selected_columns) == 1:
+            select_statement = select_statement + f"{columns} "
+        else: 
+            # adding the comma if there is expected atleast one more element to be added 
+            select_statement = select_statement + f"{columns}, "
+
+            # removing the 
+            selected_columns.remove(columns)
+    return select_statement
+
 
 
 selected_columns = []
 df = read_dataframe(test_path)
 column_names = df.columns.to_list()
 column_selection(column_names,column_names,selected_columns)
-for selected in selected_columns:
-    print(selected)
-
+print(SELECT_statemet(selected_columns))
 

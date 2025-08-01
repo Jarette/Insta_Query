@@ -13,3 +13,6 @@ Notes for full thing
 
 # Take spaces out of coulumn name 
 # and Special charcters
+
+
+#where in selection clicking a button twice removes it 

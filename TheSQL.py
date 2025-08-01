@@ -78,9 +78,42 @@ def SELECT_statemet(selected_columns:list):
             # adding the comma if there is expected atleast one more element to be added 
             select_statement = select_statement + f"{columns}, "
 
-            # removing the 
+            # removing the column after beinng used 
             selected_columns.remove(columns)
     return select_statement
+
+  def get_selected_choice():
+    print("Selected:", selected_choice.get())
+    
+def ascending_or_descending(selected_columns:list):
+    window = tk.Tk()
+    window.title("ASC or DESC")
+    options = ["ASC","DESC"]
+    choices = []
+    menus = []
+    labels = []
+    ASC_or_DESC = []
+    for c in selected_columns:
+        ASC_or_DESC.append("ASC")
+    
+    for i,columns in enumerate(selected_columns):
+        label = tk.Label(window, text = columns)
+        label.grid(row=i, column=0, padx=10, pady=5)
+        labels.append(label)
+
+        selected_choice = tk.StringVar(window)
+        selected_choice.set(options[0])
+        choices.append(selected_choice)
+
+        option_menu = tk.OptionMenu(window,selected_choice,*options)
+        option_menu.grid(row=i, column=2, padx=10, pady=5)
+        menus.append(option_menu)
+
+    window.update_idletasks()
+    current_height = window.winfo_height()
+    window.geometry(f"500x{current_height}")
+    window.mainloop()
+   
 
 
 
@@ -88,5 +121,5 @@ selected_columns = []
 df = read_dataframe(test_path)
 column_names = df.columns.to_list()
 column_selection(column_names,column_names,selected_columns)
-print(SELECT_statemet(selected_columns))
+ascending_or_descending(selected_columns)
 

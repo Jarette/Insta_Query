@@ -1,5 +1,6 @@
 import pandas as pd
 import pandasql as pdsql
+from theDataframe import column_data_type
 from theDataframe import read_dataframe
 import tkinter as tk
 from tkinter import ttk
@@ -17,13 +18,14 @@ Description: This function collects the name of the button pressed corresponding
 column being selected by the user and stores the list of columns selected and changes the 
 column blue if selected. If a column is selected twice it does update the list
 """
-def collect_columns(column_name:str, column_widget:tk.Button, selected_columns:list):
+def collect_columns(column_name:str, column_widget:tk.Button, selected_columns:list, og_column_name:str, selected_og_columns:list):
     # changing color of button to blue 
     column_widget.config(bg="blue")
     
     # making sure there is no duplicate
     if column_name not in selected_columns:
         selected_columns.append(column_name)
+        selected_og_columns.append(og_column_name)
 
 
 """
@@ -32,7 +34,7 @@ Description: This function opens a window to show buttons with the names of the 
 for collecting the colunms selected by the user and once finished can click next to move on to the 
 next part of the query
 """
-def column_selection(original_column_names:list,formated_column_names,selected_columns:list):
+def column_selection(original_column_names:list,formated_column_names,selected_columns:list,selected_og_columns:list):
     
     # create the window 
     window = tk.Tk()
@@ -44,7 +46,7 @@ def column_selection(original_column_names:list,formated_column_names,selected_c
     # generate the buttons based on how much columns are in the dataframe 
     for i,(og_columns,new_columns) in enumerate(zip(original_column_names,formated_column_names)):
         button = tk.Button(window,text = og_columns)
-        button.configure(command= lambda nc=new_columns, b=button: collect_columns(nc,b,selected_columns))
+        button.configure(command= lambda nc=new_columns, b=button, og=og_columns : collect_columns(nc,b,selected_columns,og,selected_og_columns))
         button.grid(row=i, column=0, padx=10, pady=5)
         buttons.append(button)
     
@@ -211,6 +213,20 @@ def LIMIT_statement():
         return f"LIMIT {data[0]} "
     else:
         return f"LIMIT {data[0]} OFFSET {data[1]} "
+
+def gather_data_types(df:pd.DataFrame, selected_columns:list):
+    data_types = []
+    for col in selected_columns:
+        data_types.append(column_data_type(df,col))
+    return data_types
+
+def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list):
+    data_types = gather_data_types(df,selected_columns)
+    og_selected_datatypes = zip(og_column_names,selected_columns,data_types)
+    window = tk.Tk()
+    window.title("Limit and Offset Input")
+    
+    for
     
     
     
@@ -223,12 +239,15 @@ def LIMIT_statement():
 
 selected_columns = []
 finalize_selections = []
+og_selected = []
 df = read_dataframe(test_path)
 column_names = df.columns.to_list()
-# column_selection(column_names,column_names,selected_columns)
+column_selection(column_names,column_names,selected_columns,og_selected)
+print(selected_columns)
+print(og_selected)
 # finalize_selections = ascending_or_descending(selected_columns)
 # print(selected_columns)
 # print(finalize_selections)
 # print(ORDER_BY_statement(selected_columns,finalize_selections))
-print(LIMIT_statement())
+#print(LIMIT_statement())
 

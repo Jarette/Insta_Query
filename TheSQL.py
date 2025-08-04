@@ -77,7 +77,7 @@ Description: collecting the user selecctions from the drop menu for picking asce
 """
 def get_selected_choice(choices:list[tk.StringVar],final_choices:list):
     for choice in choices:
-        final_choices.append(choice.get())
+        final_choices.append([choice.get()])
 
 """
 Name: ascending_or_descending
@@ -220,18 +220,106 @@ def gather_data_types(df:pd.DataFrame, selected_columns:list):
         data_types.append(column_data_type(df,col))
     return data_types
 
+def get_selected_choice2(choices:list[tk.StringVar,int],final_choices:list):
+    for choice in choices:
+        if len(choice) == 3:
+            final_choices.append([choice[1],choice[0].get(),choice[2].get()])
+        elif len(choice) == 2:
+            final_choices.append([choice[1],choice[0].get()]) 
+
+def only_allow_numbers(new_value):
+    if new_value == "":
+        return True
+    try:
+        float(new_value)
+        return True
+    except ValueError:
+        return False
+        
 def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list):
     data_types = gather_data_types(df,selected_columns)
     og_selected_datatypes = zip(og_column_names,selected_columns,data_types)
+    conditionals = ["equal","not equal","less than", "less than or eqaul to", "greater than", "greater than or equal to"]
+    booleans = ["True", "False"]
+    labels = []
+    choices = []
+    menus = []
+    entries = []
+    selected_condtionals = []
     window = tk.Tk()
     window.title("Limit and Offset Input")
+    vcmd = (window.register(only_allow_integers), "%P")
+    vcmd2 = (window.register(only_allow_numbers), "%P")
     
-    for
+    for i,columns in enumerate(og_selected_datatypes):
+        label = tk.Label(window, text = columns[0])
+        label.grid(row=i, column=0, padx=10, pady=5)
+        labels.append(label)
+        
+        if columns[2] == "int":
+            selected_choice = tk.StringVar(window)
+            selected_choice.set(conditionals[0])
+            
+            option_menu = tk.OptionMenu(window,selected_choice,*conditionals)
+            option_menu.grid(row=i, column=1, padx=10, pady=5)
+            menus.append(option_menu)
+            
+            entry = tk.Entry(window,width=50,validate="key",validatecommand=vcmd)
+            entry.grid(row=i, column=2,padx=10, pady=5)
+            entries.append(entry)
+            choices.append([selected_choice,i,entry])
+            
+        elif columns[2] == "float":
+            selected_choice = tk.StringVar(window)
+            selected_choice.set(conditionals[0])
+            
+            option_menu = tk.OptionMenu(window,selected_choice,*conditionals)
+            option_menu.grid(row=i, column=1, padx=10, pady=5)
+            menus.append(option_menu)
+            
+            entry = tk.Entry(window,width=50,validate="key",validatecommand=vcmd2)
+            entry.grid(row=i, column=2,padx=10, pady=5)
+            entries.append(entry)
+            choices.append([selected_choice,i,entry])
+        
+        elif columns[2] == "bool":
+            selected_choice = tk.StringVar(window)
+            selected_choice.set(booleans[0])
+             
+            option_menu = tk.OptionMenu(window,selected_choice,*booleans)
+            option_menu.grid(row=i, column=1, padx=10, pady=5)
+            menus.append(option_menu)
+            
+            choices.append([selected_choice,i])
+        elif columns[2] == "string":
+            
+             
+    finalize_button = tk.Button(window, text="Finalize choices", command= lambda : get_selected_choice2(choices, selected_condtionals))
+    finalize_button.grid(row=len(selected_columns), column=0, pady=10)
+    
+    close_button = ttk.Button(window, text="Next", command=window.destroy)
+    close_button.grid(row=len(selected_columns)+1, column=0, pady=10)
+    
+    window.update_idletasks()
+    current_height = window.winfo_height()
+    window.geometry(f"500x{current_height}")
+    window.mainloop()
+    return selected_condtionals        
+            
+
+            
+            
     
     
-    
-    
-    
+"""" 
+    int64/32/16/8
+    uint64/32/16/8
+    float64/32/16
+    bool
+    object(this includes strings)
+    datetime64
+    Timedelta
+"""
     
     
 
@@ -240,11 +328,15 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
 selected_columns = []
 finalize_selections = []
 og_selected = []
+test = []
 df = read_dataframe(test_path)
 column_names = df.columns.to_list()
+#test_data_type = gather_data_types(df,column_names)
+#print(test_data_type)
 column_selection(column_names,column_names,selected_columns,og_selected)
-print(selected_columns)
-print(og_selected)
+print(WHERE_statement(df,selected_columns,og_selected))
+# print(selected_columns)
+# print(og_selected)
 # finalize_selections = ascending_or_descending(selected_columns)
 # print(selected_columns)
 # print(finalize_selections)

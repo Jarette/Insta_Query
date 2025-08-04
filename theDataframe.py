@@ -1,4 +1,5 @@
 import pandas as pd
+import pandas.api.types as pdtype
 from getFile import get_file_extension
 from tabulate import tabulate
 import re
@@ -82,7 +83,18 @@ datetime64
 Timedelta
 """
 def column_data_type(df:pd.DataFrame,column:str):
-    return df[column].dtype
+    if pdtype.is_integer_dtype(df[column]):
+        return "int"
+    elif pdtype.is_float_dtype(df[column]):
+        return "float"
+    elif pdtype.is_datetime64_any_dtype(df[column]) or pdtype.is_datetime64_ns_dtype(df[column]) or pdtype.is_timedelta64_dtype(df[column]):
+        return "time"
+    elif pdtype.is_bool_dtype(df[column]):
+        return "bool"
+    elif pdtype.is_string_dtype(df[column]) or pdtype.is_object_dtype(df[column]):
+        return "string"
+    else:
+        return "misc"
 
 #df = read_dataframe(test_path)
 #og_cnames,new_cnames = get_columns(df)

@@ -241,6 +241,7 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
     og_selected_datatypes = zip(og_column_names,selected_columns,data_types)
     conditionals = ["equal","not equal","less than", "less than or eqaul to", "greater than", "greater than or equal to"]
     booleans = ["True", "False"]
+    str_comparisons = ["Start With","Contains","Ends With"]
     labels = []
     choices = []
     menus = []
@@ -292,6 +293,19 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
             
             choices.append([selected_choice,i])
         elif columns[2] == "string":
+
+            selected_choice = tk.StringVar(window)
+            selected_choice.set(str_comparisons[0])
+             
+            option_menu = tk.OptionMenu(window,selected_choice,*str_comparisons)
+            option_menu.grid(row=i, column=1, padx=10, pady=5)
+            menus.append(option_menu)
+
+            entry = tk.Entry(window,width=50,validate="key",validatecommand=vcmd2)
+            entry.grid(row=i, column=2,padx=10, pady=5)
+            entries.append(entry)
+            choices.append([selected_choice,i,entry])
+
             
              
     finalize_button = tk.Button(window, text="Finalize choices", command= lambda : get_selected_choice2(choices, selected_condtionals))

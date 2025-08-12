@@ -230,7 +230,9 @@ def get_selected_choice2(choices:list[tk.StringVar,int],final_choices:list):
             else:
                 final_choices.append([choice[0],choice[2],choice[1].get(),choice[3].get()])
         elif len(choice) == 3:
-            final_choices.append([choice[0],choice[2],choice[1].get()]) 
+            final_choices.append([choice[0],choice[2],choice[1].get()])
+        elif len(choice) == 2:
+            final_choices.append([choice[0],choice[1].get()])  
 
 def only_allow_numbers(new_value):
     if new_value == "":
@@ -246,14 +248,15 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
     og_selected_datatypes = zip(og_column_names,selected_columns,data_types)
     conditionals = ["equal","not equal","less than", "less than or eqaul to", "greater than", "greater than or equal to"]
     booleans = ["True", "False"]
-    string_options = ["Starts with", "Contains", "Ends with"]
+    string_options = ["Starts with", "Contains", "Ends with"," Does not starts with", "Does not Contains", " Does not Ends with"]
+    AND_OR_choices = ["AND","OR"]
     labels = []
     choices = []
     menus = []
     entries = []
     selected_condtionals = []
     window = tk.Tk()
-    window.title("Limit and Offset Input")
+    window.title("WHERE Input")
     vcmd = (window.register(only_allow_integers), "%P")
     vcmd2 = (window.register(only_allow_numbers), "%P")
     
@@ -274,7 +277,16 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
             entry.grid(row=i, column=2,padx=10, pady=5)
             entries.append(entry)
             choices.append(["int",selected_choice,i,entry])
+
+            if len(selected_columns) > 1 and i < len(selected_columns) - 1:
+                selected_choice2 = tk.StringVar(window)
+                selected_choice2.set(AND_OR_choices[0])
             
+                option_menu = tk.OptionMenu(window,selected_choice2,*AND_OR_choices)
+                option_menu.grid(row=i, column=3, padx=10, pady=5)
+                menus.append(option_menu)
+                choices.append(["conditions", selected_choice2])
+
         elif columns[2] == "float":
             selected_choice = tk.StringVar(window)
             selected_choice.set(conditionals[0])

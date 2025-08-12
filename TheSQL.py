@@ -5,11 +5,13 @@ from theDataframe import read_dataframe
 import tkinter as tk
 from tkinter import ttk
 
-test_path = "C:/Users/Jaded/Documents/insta_queary/Insta_Query/Test.xlsx"
+test_path = "C:/Users/jgreene/Desktop/Insta_Query/Insta_Query/Test.xlsx"
 
 #"C:/Users/Jaded/Documents/insta_queary/Insta_Query/Test.xlsx"
 
 # path for at work "C:/Users/jgreene/Desktop/Insta_Query/Insta_Query/Test.xlsx"
+
+# help desk path : "C:/Users/jgreene/Desktop/Insta_Query/Insta_Query/Test.xlsx" 
 
 """
 Name: collect_column
@@ -224,11 +226,11 @@ def get_selected_choice2(choices:list[tk.StringVar,int],final_choices:list):
     for choice in choices:
         if len(choice) == 4:
             if choice[0] == "time":
-                final_choices.append([choice[1],choice[2].get(),choice[3].get()])
+                final_choices.append([choice[0],choice[1],choice[2].get(),choice[3].get()])
             else:
-                final_choices.append([choice[2],choice[1].get(),choice[3].get()])
+                final_choices.append([choice[0],choice[2],choice[1].get(),choice[3].get()])
         elif len(choice) == 3:
-            final_choices.append([choice[2],choice[1].get()]) 
+            final_choices.append([choice[0],choice[2],choice[1].get()]) 
 
 def only_allow_numbers(new_value):
     if new_value == "":

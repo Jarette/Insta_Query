@@ -222,10 +222,13 @@ def gather_data_types(df:pd.DataFrame, selected_columns:list):
 
 def get_selected_choice2(choices:list[tk.StringVar,int],final_choices:list):
     for choice in choices:
-        if len(choice) == 3:
-            final_choices.append([choice[1],choice[0].get(),choice[2].get()])
-        elif len(choice) == 2:
-            final_choices.append([choice[1],choice[0].get()]) 
+        if len(choice) == 4:
+            if choice[0] == "time":
+                final_choices.append([choice[1],choice[2].get(),choice[3].get()])
+            else:
+                final_choices.append([choice[2],choice[1].get(),choice[3].get()])
+        elif len(choice) == 3:
+            final_choices.append([choice[2],choice[1].get()]) 
 
 def only_allow_numbers(new_value):
     if new_value == "":
@@ -241,6 +244,7 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
     og_selected_datatypes = zip(og_column_names,selected_columns,data_types)
     conditionals = ["equal","not equal","less than", "less than or eqaul to", "greater than", "greater than or equal to"]
     booleans = ["True", "False"]
+    string_options = ["Starts with", "Contains", "Ends with"]
     labels = []
     choices = []
     menus = []
@@ -267,7 +271,7 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
             entry = tk.Entry(window,width=50,validate="key",validatecommand=vcmd)
             entry.grid(row=i, column=2,padx=10, pady=5)
             entries.append(entry)
-            choices.append([selected_choice,i,entry])
+            choices.append(["int",selected_choice,i,entry])
             
         elif columns[2] == "float":
             selected_choice = tk.StringVar(window)
@@ -280,7 +284,7 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
             entry = tk.Entry(window,width=50,validate="key",validatecommand=vcmd2)
             entry.grid(row=i, column=2,padx=10, pady=5)
             entries.append(entry)
-            choices.append([selected_choice,i,entry])
+            choices.append(["float",selected_choice,i,entry])
         
         elif columns[2] == "bool":
             selected_choice = tk.StringVar(window)
@@ -290,9 +294,40 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
             option_menu.grid(row=i, column=1, padx=10, pady=5)
             menus.append(option_menu)
             
-            choices.append([selected_choice,i])
+            choices.append(["bool",selected_choice,i])
         elif columns[2] == "string":
+            selected_choice = tk.StringVar(window)
+            selected_choice.set(string_options[0])
             
+            option_menu = tk.OptionMenu(window,selected_choice,*string_options)
+            option_menu.grid(row=i, column=1, padx=10, pady=5)
+            menus.append(option_menu)
+            
+            entry = tk.Entry(window,width=50,validate="key")
+            entry.grid(row=i, column=2,padx=10, pady=5)
+            entries.append(entry)
+            choices.append(["string",selected_choice,i,entry])
+        elif columns[2] == "time":
+            label = tk.Label(window, text = "Between")
+            label.grid(row=i, column=1, padx=10, pady=5)
+            labels.append(label)
+            
+            label2 = tk.Label(window, text = "mm/dd/yyyy")
+            label2.grid(row=i, column=2, padx=10, pady=5)
+            labels.append(label2)
+            
+            entry = tk.Entry(window,width=50,validate="key")
+            entry.grid(row=i, column=3,padx=10, pady=5)
+            entries.append(entry)
+            
+            label3 = tk.Label(window, text = "AND")
+            label3.grid(row=i, column=4, padx=10, pady=5)
+            labels.append(label3)
+            
+            entry2 = tk.Entry(window,width=50,validate="key")
+            entry2.grid(row=i, column=5,padx=10, pady=5)
+            entries.append(entry2)
+            choices.append(["time",i,entry,entry2])
              
     finalize_button = tk.Button(window, text="Finalize choices", command= lambda : get_selected_choice2(choices, selected_condtionals))
     finalize_button.grid(row=len(selected_columns), column=0, pady=10)
@@ -302,7 +337,7 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
     
     window.update_idletasks()
     current_height = window.winfo_height()
-    window.geometry(f"500x{current_height}")
+    window.geometry(f"1500x{current_height}")
     window.mainloop()
     return selected_condtionals        
             

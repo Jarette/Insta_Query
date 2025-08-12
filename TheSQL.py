@@ -299,6 +299,15 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
             entry.grid(row=i, column=2,padx=10, pady=5)
             entries.append(entry)
             choices.append(["float",selected_choice,i,entry])
+
+            if len(selected_columns) > 1 and i < len(selected_columns) - 1:
+                selected_choice2 = tk.StringVar(window)
+                selected_choice2.set(AND_OR_choices[0])
+            
+                option_menu = tk.OptionMenu(window,selected_choice2,*AND_OR_choices)
+                option_menu.grid(row=i, column=3, padx=10, pady=5)
+                menus.append(option_menu)
+                choices.append(["conditions", selected_choice2])
         
         elif columns[2] == "bool":
             selected_choice = tk.StringVar(window)
@@ -307,8 +316,17 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
             option_menu = tk.OptionMenu(window,selected_choice,*booleans)
             option_menu.grid(row=i, column=1, padx=10, pady=5)
             menus.append(option_menu)
-            
             choices.append(["bool",selected_choice,i])
+
+            if len(selected_columns) > 1 and i < len(selected_columns) - 1:
+                selected_choice2 = tk.StringVar(window)
+                selected_choice2.set(AND_OR_choices[0])
+            
+                option_menu = tk.OptionMenu(window,selected_choice2,*AND_OR_choices)
+                option_menu.grid(row=i, column=3, padx=10, pady=5)
+                menus.append(option_menu)
+                choices.append(["conditions", selected_choice2])
+
         elif columns[2] == "string":
             selected_choice = tk.StringVar(window)
             selected_choice.set(string_options[0])
@@ -321,6 +339,16 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
             entry.grid(row=i, column=2,padx=10, pady=5)
             entries.append(entry)
             choices.append(["string",selected_choice,i,entry])
+
+            if len(selected_columns) > 1 and i < len(selected_columns) - 1:
+                selected_choice2 = tk.StringVar(window)
+                selected_choice2.set(AND_OR_choices[0])
+            
+                option_menu = tk.OptionMenu(window,selected_choice2,*AND_OR_choices)
+                option_menu.grid(row=i, column=3, padx=10, pady=5)
+                menus.append(option_menu)
+                choices.append(["conditions", selected_choice2])
+
         elif columns[2] == "time":
             label = tk.Label(window, text = "Between")
             label.grid(row=i, column=1, padx=10, pady=5)
@@ -342,6 +370,15 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
             entry2.grid(row=i, column=5,padx=10, pady=5)
             entries.append(entry2)
             choices.append(["time",i,entry,entry2])
+
+            if len(selected_columns) > 1 and i < len(selected_columns) - 1:
+                selected_choice2 = tk.StringVar(window)
+                selected_choice2.set(AND_OR_choices[0])
+            
+                option_menu = tk.OptionMenu(window,selected_choice2,*AND_OR_choices)
+                option_menu.grid(row=i, column=3, padx=10, pady=5)
+                menus.append(option_menu)
+                choices.append(["conditions", selected_choice2])
              
     finalize_button = tk.Button(window, text="Finalize choices", command= lambda : get_selected_choice2(choices, selected_condtionals))
     finalize_button.grid(row=len(selected_columns), column=0, pady=10)
@@ -354,7 +391,9 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
     window.geometry(f"1500x{current_height}")
     window.mainloop()
     return selected_condtionals        
-            
+
+def generate_WHERE_statement(selected_columns:list, WHERE_info:list):
+    return 0       
 
             
             

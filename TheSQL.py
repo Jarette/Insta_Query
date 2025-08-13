@@ -5,7 +5,7 @@ from theDataframe import read_dataframe
 import tkinter as tk
 from tkinter import ttk
 
-test_path = "C:/Users/jgreene/Desktop/Insta_Query/Insta_Query/Test.xlsx"
+test_path = "C:/Users/Jaded/Documents/insta_queary/Insta_Query/Test.xlsx"
 
 #"C:/Users/Jaded/Documents/insta_queary/Insta_Query/Test.xlsx"
 
@@ -216,24 +216,52 @@ def LIMIT_statement():
     else:
         return f"LIMIT {data[0]} OFFSET {data[1]} "
 
+"""
+Name: gather_data_types
+Description: Gathers the data type of the columns entered into the function 
+assigning a tag to that will be used for later processing of column values 
+"""
 def gather_data_types(df:pd.DataFrame, selected_columns:list):
     data_types = []
+    # traversing list of columns 
     for col in selected_columns:
+        # collecting the data types
         data_types.append(column_data_type(df,col))
+    # return list of data types
     return data_types
 
+"""
+Name: get_selected_columns2
+Description: Similar to the get_selected_columns function but customized specifically for use 
+to gather data for the WHERE statement 
+"""
 def get_selected_choice2(choices:list[tk.StringVar,int],final_choices:list):
+    #gathering all the choices from the Where statement window
     for choice in choices:
+        # if the number of data gathered is 4 meaning that this is from a int, float, string, or time column data
         if len(choice) == 4:
+            # if that data type is time 
             if choice[0] == "time":
+                # collecting the data type, index, starting date and ending date
                 final_choices.append([choice[0],choice[1],choice[2].get(),choice[3].get()])
             else:
+                #else collecting the data type, index, and box selection and user entered data 
                 final_choices.append([choice[0],choice[2],choice[1].get(),choice[3].get()])
+        
+        # if the choice contains 3 items this means it is a bool column 
         elif len(choice) == 3:
+            # collecting the data type, index, and true or false value 
             final_choices.append([choice[0],choice[2],choice[1].get()])
+            
+        # if the choice contains 2 items this is a conditional used if there are multiple selected columns 
         elif len(choice) == 2:
+            # collecting a conditional tag, and collecting the conditional 
             final_choices.append([choice[0],choice[1].get()])  
 
+"""
+Name: only_allow_numbers
+Description: validation functions used to ensure that data entered is a number (integer and float)
+"""
 def only_allow_numbers(new_value):
     if new_value == "":
         return True
@@ -242,13 +270,17 @@ def only_allow_numbers(new_value):
         return True
     except ValueError:
         return False
-        
+
+"""
+Name: only_allow_numbers
+Description: validation functions used to ensure that data entered is a number (integer and float)
+"""    
 def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list):
     data_types = gather_data_types(df,selected_columns)
     og_selected_datatypes = zip(og_column_names,selected_columns,data_types)
     conditionals = ["equal","not equal","less than", "less than or eqaul to", "greater than", "greater than or equal to"]
     booleans = ["True", "False"]
-    string_options = ["Starts with", "Contains", "Ends with"," Does not starts with", "Does not Contains", " Does not Ends with"]
+    string_options = ["Starts with", "Contains", "Ends with","Does not starts with", "Does not Contains", "Does not Ends with"]
     AND_OR_choices = ["AND","OR"]
     labels = []
     choices = []
@@ -376,7 +408,7 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
                 selected_choice2.set(AND_OR_choices[0])
             
                 option_menu = tk.OptionMenu(window,selected_choice2,*AND_OR_choices)
-                option_menu.grid(row=i, column=3, padx=10, pady=5)
+                option_menu.grid(row=i, column=6, padx=10, pady=5)
                 menus.append(option_menu)
                 choices.append(["conditions", selected_choice2])
              
@@ -393,24 +425,48 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
     return selected_condtionals        
 
 def generate_WHERE_statement(selected_columns:list, WHERE_info:list):
-    return 0       
+    Where_statement = "WHERE "
+    for info in WHERE_info:
+        if info[0] == "int" or info[0] == "float":
+            Where_statement = Where_statement + f"{selected_columns[info[1]]} "
+            if info[2] == "equal":
+                Where_statement = Where_statement + f"= {info[3]} "
+            elif info[2] == "not equal":
+                Where_statement = Where_statement + f"!= {info[3]} "
+            elif info[2] == "less than":
+                Where_statement = Where_statement + f"< {info[3]} "
+            elif info[2] == "less than or equal to":
+                Where_statement = Where_statement + f"<= {info[3]} "
+            elif info[2] == "greater than":
+                Where_statement = Where_statement + f"> {info[3]} "
+            elif info[2] == "greater than or equal to":
+                Where_statement = Where_statement + f">= {info[3]} "
+        elif info[0] == "conditions":
+            Where_statement = Where_statement + f"{info[1]} "
+        elif info[0] == "bool":
+            Where_statement = Where_statement + f"{selected_columns[info[1]]} {info[2]} "
+        elif info[0] == "string":
+            Where_statement = Where_statement + f"{selected_columns[info[1]]} "
+            if info[2] == "Starts with":
+                Where_statement = Where_statement + f"LIKE \"{info[3]}%\" "
+            elif info[2] == "Contains":
+                Where_statement = Where_statement + f"LIKE \"%{info[3]}%\" "
+            elif info[2] == "Ends with":
+                Where_statement = Where_statement + f"LIKE \"%{info[3]}\" "
+            elif info[2] == "Does not starts with":
+                Where_statement = Where_statement + f"NOT LIKE \"{info[3]}%\" "
+            elif info[2] == "Does not Contains":
+                Where_statement = Where_statement + f"NOT LIKE \"%{info[3]}%\" "
+            elif info[2] == "Does not Ends with":
+                Where_statement = Where_statement + f"NOT LIKE \"%{info[3]}\" "
+        elif info[0] == "time":
+            Where_statement = Where_statement + f"{selected_columns[info[1]]} BETWEEN #{info[2]}# AND #{info[3]}# "
+            
+             
+    return Where_statement       
 
             
-            
     
-    
-"""" 
-    int64/32/16/8
-    uint64/32/16/8
-    float64/32/16
-    bool
-    object(this includes strings)
-    datetime64
-    Timedelta
-"""
-    
-    
-
 
 
 selected_columns = []
@@ -422,7 +478,8 @@ column_names = df.columns.to_list()
 #test_data_type = gather_data_types(df,column_names)
 #print(test_data_type)
 column_selection(column_names,column_names,selected_columns,og_selected)
-print(WHERE_statement(df,selected_columns,og_selected))
+where_info = WHERE_statement(df,selected_columns,og_selected)
+print(generate_WHERE_statement(selected_columns,where_info))
 # print(selected_columns)
 # print(og_selected)
 # finalize_selections = ascending_or_descending(selected_columns)

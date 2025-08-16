@@ -272,32 +272,50 @@ def only_allow_numbers(new_value):
         return False
 
 """
-Name: only_allow_numbers
-Description: validation functions used to ensure that data entered is a number (integer and float)
+Name: WHERE_statement
+Description: This function will display windows that will allow the user to enter data that will be used to generate 
+the SQL WHERE Statement. 
 """    
 def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list):
+    # collecting the datatypes of the different columns 
     data_types = gather_data_types(df,selected_columns)
+    
+    # joining lists consisting of the names (original and formated) and datatype of each columns 
     og_selected_datatypes = zip(og_column_names,selected_columns,data_types)
+    
+    # list containing the various options 
     conditionals = ["equal","not equal","less than", "less than or eqaul to", "greater than", "greater than or equal to"]
     booleans = ["True", "False"]
     string_options = ["Starts with", "Contains", "Ends with","Does not starts with", "Does not Contains", "Does not Ends with"]
     AND_OR_choices = ["AND","OR"]
+    
+    # list containing the different elements for the windows 
     labels = []
     choices = []
     menus = []
     entries = []
     selected_condtionals = []
+    
+    # creating the TK windows
     window = tk.Tk()
     window.title("WHERE Input")
+    
+    # validation functions used to ensure data being eneterd is a integer or  float respectively
     vcmd = (window.register(only_allow_integers), "%P")
     vcmd2 = (window.register(only_allow_numbers), "%P")
     
+    # generating the window based on the selected graphs 
     for i,columns in enumerate(og_selected_datatypes):
+        
+        # placing the name of the column on the window
         label = tk.Label(window, text = columns[0])
         label.grid(row=i, column=0, padx=10, pady=5)
         labels.append(label)
         
+        # if the data type of the column being processed is a integer 
         if columns[2] == "int":
+            
+            # creating drop down window for user to pick bolean conditions (<,>,=,>=,<=) etc
             selected_choice = tk.StringVar(window)
             selected_choice.set(conditionals[0])
             
@@ -305,12 +323,16 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
             option_menu.grid(row=i, column=1, padx=10, pady=5)
             menus.append(option_menu)
             
+            # box allowing the user to type an integer (does check to make sure it is integer)
             entry = tk.Entry(window,width=50,validate="key",validatecommand=vcmd)
             entry.grid(row=i, column=2,padx=10, pady=5)
             entries.append(entry)
             choices.append(["int",selected_choice,i,entry])
 
+            # generate this window if there are multiple columns or this isnt the last columns to be generated 
             if len(selected_columns) > 1 and i < len(selected_columns) - 1:
+                
+                # generate a drop down window asking for AND or OR that is used only when multiple columns are selected 
                 selected_choice2 = tk.StringVar(window)
                 selected_choice2.set(AND_OR_choices[0])
             
@@ -319,6 +341,7 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
                 menus.append(option_menu)
                 choices.append(["conditions", selected_choice2])
 
+        # similar to the integer data type but for floats
         elif columns[2] == "float":
             selected_choice = tk.StringVar(window)
             selected_choice.set(conditionals[0])
@@ -341,7 +364,10 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
                 menus.append(option_menu)
                 choices.append(["conditions", selected_choice2])
         
+        # if checking if the data type is a boolean 
         elif columns[2] == "bool":
+            
+            # generate drop down asking the user to pick true or false 
             selected_choice = tk.StringVar(window)
             selected_choice.set(booleans[0])
              
@@ -358,8 +384,11 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
                 option_menu.grid(row=i, column=3, padx=10, pady=5)
                 menus.append(option_menu)
                 choices.append(["conditions", selected_choice2])
-
+                
+         # if checking if the data type is a string
         elif columns[2] == "string":
+            
+            # generate a drop down window which allows the user to state if thier looking for a string to contain, start, end or doesnt not have the string entered int he box 
             selected_choice = tk.StringVar(window)
             selected_choice.set(string_options[0])
             
@@ -367,6 +396,7 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
             option_menu.grid(row=i, column=1, padx=10, pady=5)
             menus.append(option_menu)
             
+            # box allowing user ot enter a string
             entry = tk.Entry(window,width=50,validate="key")
             entry.grid(row=i, column=2,padx=10, pady=5)
             entries.append(entry)
@@ -381,23 +411,28 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
                 menus.append(option_menu)
                 choices.append(["conditions", selected_choice2])
 
+        # if the column is a date/time datatype
         elif columns[2] == "time":
+            
             label = tk.Label(window, text = "Between")
             label.grid(row=i, column=1, padx=10, pady=5)
             labels.append(label)
             
+            # label showing the format of the date being entered 
             label2 = tk.Label(window, text = "mm/dd/yyyy")
             label2.grid(row=i, column=2, padx=10, pady=5)
             labels.append(label2)
             
+            # box allowing the user to enter the date 
             entry = tk.Entry(window,width=50,validate="key")
             entry.grid(row=i, column=3,padx=10, pady=5)
             entries.append(entry)
             
+            
             label3 = tk.Label(window, text = "AND")
             label3.grid(row=i, column=4, padx=10, pady=5)
             labels.append(label3)
-            
+            # enter the second date 
             entry2 = tk.Entry(window,width=50,validate="key")
             entry2.grid(row=i, column=5,padx=10, pady=5)
             entries.append(entry2)
@@ -411,24 +446,41 @@ def WHERE_statement(df:pd.DataFrame, selected_columns:list, og_column_names:list
                 option_menu.grid(row=i, column=6, padx=10, pady=5)
                 menus.append(option_menu)
                 choices.append(["conditions", selected_choice2])
-             
+      
+    # This button then collects all the selection from the window        
     finalize_button = tk.Button(window, text="Finalize choices", command= lambda : get_selected_choice2(choices, selected_condtionals))
     finalize_button.grid(row=len(selected_columns), column=0, pady=10)
     
+    # closes the windoow
     close_button = ttk.Button(window, text="Next", command=window.destroy)
     close_button.grid(row=len(selected_columns)+1, column=0, pady=10)
     
+    # ensures the window is large enough to display data 
     window.update_idletasks()
     current_height = window.winfo_height()
     window.geometry(f"1500x{current_height}")
     window.mainloop()
+    
+    # returning a list containing all the selections from the users 
     return selected_condtionals        
 
+"""
+Name: generate_WHERE_statement
+Description: This function takes the list of selections from the Where statement function and generates the appriopriately formated 
+sql WHERE statement using this data 
+""" 
 def generate_WHERE_statement(selected_columns:list, WHERE_info:list):
+    # inializing the where statement 
     Where_statement = "WHERE "
+    
+    # traversing the list of user selections 
     for info in WHERE_info:
+        # if the data relates to a integer or float column 
         if info[0] == "int" or info[0] == "float":
+            # get the column name 
             Where_statement = Where_statement + f"{selected_columns[info[1]]} "
+            
+            # baased on the condtional selected generate the approriate symbol
             if info[2] == "equal":
                 Where_statement = Where_statement + f"= {info[3]} "
             elif info[2] == "not equal":
@@ -441,12 +493,22 @@ def generate_WHERE_statement(selected_columns:list, WHERE_info:list):
                 Where_statement = Where_statement + f"> {info[3]} "
             elif info[2] == "greater than or equal to":
                 Where_statement = Where_statement + f">= {info[3]} "
+                
+        # this is for the between conditionals if there are multiple selected columns 
         elif info[0] == "conditions":
             Where_statement = Where_statement + f"{info[1]} "
+        
+        # genrate the statemente checking for bolean columsn 
         elif info[0] == "bool":
-            Where_statement = Where_statement + f"{selected_columns[info[1]]} {info[2]} "
+            Where_statement = Where_statement + f"{selected_columns[info[1]]} IS {info[2]} "
+            
+        # if the data in the columns is a string 
         elif info[0] == "string":
+            
+            # adding selected columns
             Where_statement = Where_statement + f"{selected_columns[info[1]]} "
+            
+            # baased on the condtional selected generate the approriate wildcard
             if info[2] == "Starts with":
                 Where_statement = Where_statement + f"LIKE \"{info[3]}%\" "
             elif info[2] == "Contains":
@@ -462,29 +524,29 @@ def generate_WHERE_statement(selected_columns:list, WHERE_info:list):
         elif info[0] == "time":
             Where_statement = Where_statement + f"{selected_columns[info[1]]} BETWEEN #{info[2]}# AND #{info[3]}# "
             
-             
+    # return the final where statement       
     return Where_statement       
 
             
     
 
 
-selected_columns = []
-finalize_selections = []
-og_selected = []
-test = []
-df = read_dataframe(test_path)
-column_names = df.columns.to_list()
-#test_data_type = gather_data_types(df,column_names)
-#print(test_data_type)
-column_selection(column_names,column_names,selected_columns,og_selected)
-where_info = WHERE_statement(df,selected_columns,og_selected)
-print(generate_WHERE_statement(selected_columns,where_info))
-# print(selected_columns)
-# print(og_selected)
-# finalize_selections = ascending_or_descending(selected_columns)
-# print(selected_columns)
-# print(finalize_selections)
-# print(ORDER_BY_statement(selected_columns,finalize_selections))
-#print(LIMIT_statement())
+# selected_columns = []
+# finalize_selections = []
+# og_selected = []
+# test = []
+# df = read_dataframe(test_path)
+# column_names = df.columns.to_list()
+# #test_data_type = gather_data_types(df,column_names)
+# #print(test_data_type)
+# column_selection(column_names,column_names,selected_columns,og_selected)
+# where_info = WHERE_statement(df,selected_columns,og_selected)
+# print(generate_WHERE_statement(selected_columns,where_info))
+# # print(selected_columns)
+# # print(og_selected)
+# # finalize_selections = ascending_or_descending(selected_columns)
+# # print(selected_columns)
+# # print(finalize_selections)
+# # print(ORDER_BY_statement(selected_columns,finalize_selections))
+# #print(LIMIT_statement())
 

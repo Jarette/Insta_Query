@@ -29,7 +29,25 @@ def collect_columns(column_name:str, column_widget:tk.Button, selected_columns:l
         selected_columns.append(column_name)
         selected_og_columns.append(og_column_name)
 
+"""
+Name: collect_column_all
 
+Description: similar to collect_column function but only used when the user selects all on the column selection screen to collect the names of all the columns 
+"""
+def collect_columns_all( fcn: list , ogcn: list, column_widget:tk.Button, selected_columns:list, selected_og_columns:list, window:tk.Tk):
+    # changing color of button to blue 
+    column_widget.config(bg="blue")
+    
+    # making sure there is no duplicate
+    print(ogcn)
+    for fn,ogn in zip(fcn,ogcn):
+        selected_columns.append(fn)
+        selected_og_columns.append(ogn)
+    
+    window.destroy()
+    
+    
+    
 """
 Name: column_selection
 Description: This function opens a window to show buttons with the names of the columns to use 
@@ -63,14 +81,57 @@ def column_selection(original_column_names:list,formated_column_names,selected_c
     
     
     window.mainloop()
+    
+"""
+Name: column_selection_w_all
+Description: adds a ALL button to allow the user to select all columns 
+"""
+def column_selection_w_all(original_column_names:list,formated_column_names,selected_columns:list,selected_og_columns:list):
+    
+    # create the window 
+    window = tk.Tk()
+    window.title("Select Columns")
+    
+    # empty list to store buttons 
+    buttons = []
+    
+    # generate the buttons based on how much columns are in the dataframe 
+    for i,(og_columns,new_columns) in enumerate(zip(original_column_names,formated_column_names)):
+        button = tk.Button(window,text = og_columns)
+        button.configure(command= lambda nc=new_columns, b=button, og=og_columns : collect_columns(nc,b,selected_columns,og,selected_og_columns))
+        button.grid(row=i, column=0, padx=10, pady=5)
+        buttons.append(button)
+    
+    button = tk.Button(window,text="ALL")
+    button.configure(command= lambda fcn = formated_column_names, ogcn = original_column_names, b=button, w=window : collect_columns_all(fcn,ogcn,b,selected_columns,selected_og_columns,w))
+    button.grid(row=len(original_column_names), column=0, padx=10, pady=5)
+    buttons.append(button)
+    
+    # the button to close the window and move unto the next step 
+    close_button = ttk.Button(window, text="Next", command=window.destroy)
+    close_button.grid(row=len(original_column_names)+1, column=0, pady=10)
+    
+    # generating the window width to ensure title shows 
+    window.update_idletasks()
+    current_height = window.winfo_height()
+    window.geometry(f"500x{current_height}")
+    
+    
+    window.mainloop()
 
 """
 Name: column_selection
 Description: takes the list of selected columns and generate a SQL SELECT statement using those column
 in correct syntax
 """
-def SELECT_statement(selected_columns: list):
-    select_statement = "SELECT " + ", ".join(selected_columns)
+def SELECT_statement(selected_columns: list, og_column_names:list):
+    
+    # use * syntax if user selects all 
+    if len(selected_columns) == len(og_column_names):
+        select_statement = "SELECT * FROM df"
+    else:
+        select_statement = "SELECT " + ", ".join(selected_columns)
+        select_statement = select_statement + " FROM df"
     return select_statement
 
 """
@@ -79,7 +140,7 @@ Description: collecting the user selecctions from the drop menu for picking asce
 """
 def get_selected_choice(choices:list[tk.StringVar],final_choices:list):
     for choice in choices:
-        final_choices.append([choice.get()])
+        final_choices.append(choice.get())
 
 """
 Name: ascending_or_descending
@@ -135,9 +196,11 @@ Name: ORDER_BY_statement
 Description: This function creates the ORDER BY statement for the final sql statement 
 """
 def ORDER_BY_statement(selected_columns:list, ascending_or_descending:list):
+    print(ascending_or_descending)
     combine =list(zip(selected_columns,ascending_or_descending))
     order_by_part = [f"{col} {order}" for col,order in combine]
     order_by_statement = "ORDER BY " + ", ".join(order_by_part)
+    order_by_statement = order_by_statement + " "
     return order_by_statement
 
 """
@@ -527,8 +590,79 @@ def generate_WHERE_statement(selected_columns:list, WHERE_info:list):
     # return the final where statement       
     return Where_statement       
 
-            
+"""
+Name: statement_selection
+Description: This function will open the window and ask the user a question where they can answer Yes or No
+and if they say yes return true and false if no is selected
+"""            
+def statement_selection(title:str, question:str):
+    #where the result of the selection is store
+    result = {"value": None}
     
+    # functions to show behaviors based on the button pressed 
+    def on_yes():
+        result["value"] = True
+        root.destroy()
+
+    def on_no():
+        result["value"] = False
+        root.destroy()
+
+    #creating the window 
+    root = tk.Tk()
+    root.title(title)
+    root.geometry("500x250")
+    root.eval('tk::PlaceWindow . center')  # try to center on screen
+
+    # Label with question
+    label = tk.Label(root, text=question, font=("Arial", 12, "bold"))
+    label.pack(pady=20)
+
+    # Frame for buttons
+    frame = tk.Frame(root)
+    frame.pack()
+
+    #yes button
+    yes_button = tk.Button(frame, text="Yes", width=10, command=on_yes)
+    yes_button.pack(side="left", padx=10)
+
+    #no button
+    no_button = tk.Button(frame, text="No", width=10, command=on_no)
+    no_button.pack(side="left", padx=10)
+
+    root.mainloop()
+    
+    # returning the final 
+    return result["value"]
+
+"""
+Name: generate_query
+Description: This function will accept the varios statements that are required for the query and 
+generate the final query
+"""         
+def generate_query(select:str,where:str,order_by:str,limit:str) -> str:
+    
+    # the intial select query
+    query = select
+    
+    # if a WHERE statement exists add to query 
+    if where != "":
+        query = query + where
+        
+    # if a ORDER BY statement exists add to query 
+    if order_by != "":
+        query = query + order_by
+        
+    # if a LIMIT statement exists add to query 
+    if limit != "":
+        query = query + limit
+
+    # final query 
+    return query
+    
+        
+            
+
 
 
 # selected_columns = []
@@ -537,16 +671,22 @@ def generate_WHERE_statement(selected_columns:list, WHERE_info:list):
 # test = []
 # df = read_dataframe(test_path)
 # column_names = df.columns.to_list()
-# #test_data_type = gather_data_types(df,column_names)
-# #print(test_data_type)
-# column_selection(column_names,column_names,selected_columns,og_selected)
+# test_data_type = gather_data_types(df,column_names)
+# # #print(test_data_type)
+# column_selection_w_all(column_names,column_names,selected_columns,og_selected)
+# print(selected_columns)
+# print(og_selected)
+# print(SELECT_statement(selected_columns))
 # where_info = WHERE_statement(df,selected_columns,og_selected)
 # print(generate_WHERE_statement(selected_columns,where_info))
 # # print(selected_columns)
 # # print(og_selected)
-# # finalize_selections = ascending_or_descending(selected_columns)
+#finalize_selections = ascending_or_descending(selected_columns)
+
 # # print(selected_columns)
 # # print(finalize_selections)
-# # print(ORDER_BY_statement(selected_columns,finalize_selections))
+#print(ORDER_BY_statement(selected_columns,finalize_selections))
 # #print(LIMIT_statement())
+
+#print(statement_selection("WHERE STATEMENT", "Would you like to add a WHERE statement",1))
 

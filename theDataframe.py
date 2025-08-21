@@ -3,6 +3,8 @@ import pandas.api.types as pdtype
 from getFile import get_file_extension
 from tabulate import tabulate
 import re
+import tkinter as tk
+from tkinter import ttk
 
 test_path = "C:/Users/Jaded/Documents/insta_queary/Insta_Query/Test.xlsx"
 
@@ -20,7 +22,7 @@ def read_dataframe(test_path: str) -> pd.DataFrame:
     # Read the file based on its extension
     if ext == '.xlsx':
         # reading the excel file 
-        df = pd.read_excel(test_path)
+        df = pd.read_excel(test_path,sheet_name=None)
     elif ext == '.csv':
         # reading the csv file
         df = pd.read_csv(test_path)
@@ -96,7 +98,41 @@ def column_data_type(df:pd.DataFrame,column:str):
     else:
         return "misc"
 
+
+    
+def select_table(dfs:pd.DataFrame):
+    
+    choice = ""
+    tables = list(dfs.keys())
+    window = tk.Tk()
+    window.title("Select Columns")
+    
+    label = tk.Label(window, text = "Select the table you would like to query: ")
+    label.grid(row= 1, column=0, padx=10, pady=5)
+    
+    selected_choice = tk.StringVar(window)
+    selected_choice.set(tables[0])
+    
+    option_menu = tk.OptionMenu(window,selected_choice,*tables)
+    option_menu.grid(row=1, column=2, padx=10, pady=5)
+    
+    def choosing_table():
+        nonlocal choice
+        choice = selected_choice.get()
+        window.destroy()
+    
+    finalize_button = tk.Button(window, text="Next", command = choosing_table)
+    finalize_button.grid(row=2, column=0, pady=10)
+    
+    window.update_idletasks()
+    current_height = window.winfo_height()
+    window.geometry(f"500x{current_height}")
+    window.mainloop()
+    
+    return dfs[choice]
+    
 #df = read_dataframe(test_path)
+#print(select_table(df))
 #og_cnames,new_cnames = get_columns(df)
 #updating_columns(df,og_cnames,new_cnames)
 #for column in new_cnames:

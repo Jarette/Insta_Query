@@ -4,6 +4,7 @@ from tabulate import tabulate
 import os
 
 from getFile import validating_file
+from getFile import get_file_extension
 from theDataframe import *
 
 from TheSQL import column_selection
@@ -26,7 +27,11 @@ limit =""
 
 #Step 1 ask user for csv or xlsx file and save the dataframe 
 path = validating_file()
-df = read_dataframe(path)
+if get_file_extension(path) == ".csv":
+    df = read_dataframe(path)
+else:
+    dfs = read_dataframe(path)
+    df = select_table(dfs)
 
 # Step 2 have user select columns 
 

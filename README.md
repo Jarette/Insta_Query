@@ -1,21 +1,22 @@
 ## Insta Query
 
-### Creadted by: Jarette Greene
+### Created by: Jarette Greene
 
 ### Description:
 
-    		Insta Query is a miniature database management tool which allows the user to SQL query
-            xlsx or csv files through the use of a simple and intuitive user interface,
-            not requiring the user to know SQL to perform queries, and save the newly generated
-            queried table to a new table for its own.
+    		Insta Query is a lightweight database management tool that allows
+            users to run SQL queries on XLSX or CSV files through a simple
+            and intuitive interface. It does not require users to know
+            SQL to perform queries, and it enables them to save the
+            generated results as a new table.
 
 ### Goals:
 
-            The goal of this tool is to allow users who collect data but not
-            to the degree of needing a full database but large enough that parsing
-            through this data can be vvery tedious. Using this tool will allow the
-            user to use SQL to parse through data effieciently without the need
-            of knowing SQL syntax
+            The goal of this tool is to support users who work
+            with data sets that are too large to parse manually,
+            but not large enough to require a full database system.
+            It enables users to efficiently filter and analyze their data
+            using SQL-like queries—without needing to know SQL syntax.
 
 ### Files:
 
@@ -27,3 +28,8 @@
 ### How to Use:
 
 - Download then Run Insta_Query.exe (Refer to user guide for additional instruction)
+
+### Contact Me
+
+Linkedin: www.linkedin.com/in/jarettegreene
+Email: jarettegreene09@gmail.com
